@@ -7,7 +7,19 @@
       </router-link>
       <router-link :to="{name: 'category', params: {id: 'front-end'}}" class="navbar-item is-tab">FrontEnd</router-link>
       <router-link :to="{name: 'category', params: {id: 'mobile'}}" class="navbar-item is-tab">Mobile</router-link>
-      <router-link to="/login" class="navbar-item is-tab">Login</router-link>
+      <router-link to="/login" class="navbar-item is-tab">
+        <span v-if="isAuthenticated">Logout</span>
+        <span v-else>Login</span>
+      </router-link>
     </div>
   </nav>
 </template>
+<script>
+import { mapGetters } from 'vuex'
+export default {
+  computed: {
+    ...mapGetters(['isAuthenticated'])
+  }
+}
+</script>
+

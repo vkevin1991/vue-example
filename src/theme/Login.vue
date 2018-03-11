@@ -2,8 +2,8 @@
   <div class="content">
     <div v-if="isAuthenticated">
       <h2>Hello Authenticated user!</h2>
-      <p>Name: {{profile.firstName}}</p>
-      <p>Favorite Sandwich: {{profile.favoriteSandwich}}</p>
+      <!-- <p>Name: {{profile.firstName}}</p>
+      <p>Favorite Sandwich: {{profile.favoriteSandwich}}</p> -->
       <button class="button is-primary" v-on:click="logout()">Logout</button>
     </div>
     <div v-else>
@@ -52,53 +52,50 @@
   </div>
 </template>
 <script>
-import appService from '../app.service.js'
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
   data () {
     return {
       username: '',
       password: '',
-      isAuthenticated: false,
       profile: {}
     }
   },
+  computed: {
+    ...mapGetters(['isAuthenticated'])
+  },
   methods: {
+    ...mapActions({
+      logout: 'logout'
+    }),
     login () {
-      appService.login({username: this.username, password: this.password})
-        .then((data) => {
-          window.localStorage.setItem('token', data.token)
-          window.localStorage.setItem('tokenExpiration', data.expiration)
-          this.isAuthenticated = true
+      this.$store.dispatch('login', {username: this.username, password: this.password})
+        .then(() => {
           this.username = ''
           this.password = ''
         })
-        .catch(() => window.alert('Could not login'))
-    },
-    logout () {
-      window.localStorage.setItem('token', null)
-      window.localStorage.setItem('tokenExpiration', null)
-      this.isAuthenticated = false
-    }
-  },
-  watch: {
-    isAuthenticated: function (val) {
-      if (val) {
-        appService.getProfile()
-          .then(profile => {
-            this.profile = profile
-          })
-      } else {
-        this.profile = {}
-      }
-    }
-  },
-  created () {
-    let expiration = window.localStorage.getItem('tokenExpiration')
-    var unixTimestamp = new Date().getTime() / 1000
-    if (expiration !== null && parseInt(expiration) - unixTimestamp > 0) {
-      this.isAuthenticated = true
     }
   }
+  // watch: {
+  //   isAuthenticated: function (val) {
+  //     if (val) {
+  //       appService.getProfile()
+  //         .then(profile => {
+  //           this.profile = profile
+  //         })
+  //     } else {
+  //       this.profile = {}
+  //     }
+  //   }
+  // },
+  // created () {
+  //   let expiration = window.localStorage.getItem('tokenExpiration')
+  //   var unixTimestamp = new Date().getTime() / 1000
+  //   if (expiration !== null && parseInt(expiration) - unixTimestamp > 0) {
+  //     //this.isAuthenticated = true
+  //   }
+  // }
 }
 </script>
 
