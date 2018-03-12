@@ -11,20 +11,26 @@
 <script>
 import Post from './Post.vue'
 import { mapGetters } from 'vuex'
+const fetchInitialData = (store, route) => {
+  let categoryId = 2
+  if (route.params.id === 'front-end') {
+    categoryId = 11
+  }
+  store.dispatch('postsModule/updateCategory', categoryId)
+}
 export default {
   components: {
     'app-post': Post
+  },
+  asyncData (store, route) {
+    fetchInitialData(store, route)
   },
   computed: {
     ...mapGetters('postsModule', ['posts'])
   },
   methods: {
     loadPosts () {
-      let categoryId = 2
-      if (this.$route.params.id === 'front-end') {
-        categoryId = 11
-      }
-      this.$store.dispatch('postsModule/updateCategory', categoryId)
+      fetchInitialData(this.$store, this.$route)
     }
   },
   watch: {
